@@ -1,0 +1,30 @@
+semen
+barrrr
+ssssssaaa
+domain = "pgu.ru"
+
+
+def analyze_web(domain):
+    dict = {}
+    cms_found = " "
+    wapp = Wappalyzer.latest()
+    try:
+        webpage = WebPage.new_from_url(domain)
+        dict = wapp.analyze_with_categories(webpage)
+    except Exception as E:
+        pass
+    for key, key1 in dict.items():
+        for keys, values in key1.items():
+            if values == "CMS":
+                print("{0} : {1}".format(domain, key))
+                cms_found = 1
+                # output_file.write(domain + " : " + key + "\n")
+                return domain + " : " + key
+            else:
+                cms_found = None
+                continue
+    if cms_found == None:
+        return domain + " : No CMS"
+
+
+print(analyze_web(domain))
