@@ -1,6 +1,7 @@
 from Wappalyzer import Wappalyzer, WebPage
 
-domain = "https://pgu.ru/"
+domain = input("Введите название сайта:  ")
+# domain_forcms = "https://{domain}"
 
 
 def get_cms(urls):

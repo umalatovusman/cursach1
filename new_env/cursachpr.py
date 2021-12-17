@@ -1,10 +1,34 @@
-import requests
-from Wappalyzer import Wappalyzer, WebPage
 import ssl, socket
+from Wappalyzer import Wappalyzer, WebPage
+import requests
 
-# домен для поиска поддоменов
-domain = "https://pgu.ru/"
-# читать все поддомены
+domain = input("Введите название сайта:  ")
+
+
+def get_certif(hostname):
+    ctx = ssl.create_default_context()
+    with ctx.wrap_socket(socket.socket(), server_hostname=hostname) as s:
+        s.connect((hostname, 443))
+        cert = s.getpeercert()
+        # print(cert)
+    subject = dict(x[0] for x in cert["subject"])
+    issued_to = subject["commonName"]
+    issuer = dict(x[0] for x in cert["issuer"])
+    issued_by = issuer["commonName"]
+    orgname = issuer["organizationName"]
+    dateof_iss = cert["notBefore"]
+    dateof_end = cert["notAfter"]
+
+    print(
+        f"\nСертификат SSL {issued_to}: {issued_by} \nВыдан организацией: {orgname}\nДата выдачи:{dateof_iss}\nДействителен до {dateof_end} "
+    )
+
+
+get_certif(domain)
+
+domain_forcms = f"https://{domain}"
+
+
 def get_cms(urls):
     result = {}
     cms_found = None
@@ -28,29 +52,11 @@ def get_cms(urls):
         return urls + " : No CMS"
 
 
-print(get_cms(domain))
+print(get_cms(domain_forcms))
 
-# список обнаруженных поддоменов
+# from Wappalyzer import Wappalyzer, WebPage
 
-domain1 = "pgu.ru"
-
-
-def get_certif(hostname):
-    ctx = ssl.create_default_context()
-    with ctx.wrap_socket(socket.socket(), server_hostname=hostname) as s:
-        s.connect((hostname, 443))
-        cert = s.getpeercert()
-
-    subject = dict(x[0] for x in cert["subject"])
-    issued_to = subject["commonName"]
-    issuer = dict(x[0] for x in cert["issuer"])
-    issued_by = issuer["commonName"]
-    print(f"Сертификат SSL: {issued_by}")
-
-
-get_certif(domain1)
-
-
+# domain = input("Введите название сайта:  ")
 def get_subdom(subdomain):
     discovered_subdomains = []
     file = open("subdomains-1000.txt")
@@ -59,7 +65,7 @@ def get_subdom(subdomain):
 
     # создать URL
     for subdomain in subdomains:
-        url = f"http://{subdomain}.{domain1}"
+        url = f"http://{subdomain}.{domain}"
         try:
             # если возникает ОШИБКА, значит, субдомен не существует
             requests.head(url, timeout=5)
@@ -72,3 +78,5 @@ def get_subdom(subdomain):
 
 
 print(get_subdom(domain))
+
+domain_forcms = f"https://{domain}"
